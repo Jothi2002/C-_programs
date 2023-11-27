@@ -37,10 +37,10 @@ public:
             return;
         }
         cout << "Transaction History:" << endl;
-        cout << "Date\t\tCategory\tAmount" << endl;
+        cout << "Date\t\tCategory\t\tAmount" << endl;
 
         for (int i = 0; i < num; i++) {
-            cout << transactions[i].date << "\t" << transactions[i].category << "\t\t" << transactions[i].amount << endl;
+            cout << transactions[i].date << "\t\t" << transactions[i].category << "\t\t" << transactions[i].amount << endl;
         }
     }
 
@@ -58,10 +58,13 @@ public:
 
         cout << "Spending Patterns Report:" << endl;
         cout << "Category\tTotal Spending" << endl;
+        double total_spending_amount = 0.0;
 
         for (const auto &entry : sum_category) {
             cout << entry.first << "\t\t" << entry.second << endl;
+            total_spending_amount+=entry.second;
         }
+        cout<<"Total Spending Amount:\t"<<total_spending_amount<<endl;
     }
 };
 
