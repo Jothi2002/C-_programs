@@ -1,111 +1,153 @@
-#include<stdio.h>
-#include<iostream>
-#include<cstdlib>
+#include <iostream>
+#include <cstdlib>
 using namespace std;
-class user{
-    public:
+
+class user {
+public:
     string username;
-    string pwd;
-    string account_name;
+    string encryptedPwd;  // Store the encrypted password instead of plain text
+    string web;
 };
-//class derived from user
-class passwordmanagement:public user{
-    public:
+
+class passwordmanagement : public user {
+public:
     user currentuser;
-//function for user registration
-void userreg(string username,string pwd)
-{  cout<<"enter username: ";
-    cin>>currentuser.username;
-    cout<<"enter pwd: ";
-    cin>>currentuser.pwd;
-    cout<<"userregistration sucessfull" << endl;
-}
-//function for user login
-void userlogin(string username,string pwd)
-{ cout<<"enter username: ";
-    cin>>username;
-    cout<<"enter pwd: ";
-    cin>>pwd;
-    if(username==currentuser.username && pwd==currentuser.pwd) //check if username and password is already register
-    {
-        cout<<"userlogin sucessfull" << endl;;
-    }
-    else{
-        cout<<"userlogin failed" <<endl;
-    }
-}
-//function for store password
- void storagepwd() {
-    cout << "Enter the website or account name: ";
-    cin >> currentuser.account_name;
 
-    cout << "Enter the username: ";
-    cin >> currentuser.username;
+    // Function for user registration
+    void userreg() {
+        cout << "Enter username: ";
+        cin >> currentuser.username;
 
-cout<<"Enter the password or type 'generate' for a generated password."<<endl;
-    string password;
-    cin >> password;
+        cout << "Enter password: ";
+        cin >> currentuser.encryptedPwd;  // Change 'pwd' to 'encryptedPwd'
 
-    if (password == "generate") { 
-        currentuser.pwd = generatepwd(15);  //it generates password with a length of 15
-    } else {
-        currentuser.pwd = password;
+        // Encrypt the password before storing
+        currentuser.encryptedPwd = encryptPwd(currentuser.encryptedPwd);
+
+        cout << "User registration successful" << endl;
     }
 
-    cout << "Password stored successfully!" << endl;
-}
-//function for retrieve password
-string retrievepwd(string username,string web)
-{ cout<<"enter username";
-    cin>>username;
-    cout<<"enter account_name";
-    cin>>web;
-    if(username==currentuser.username && account_name==currentuser.account_name) 
-    {
-        cout<<currentuser.pwd << endl;
+    // Function for user login
+    void userlogin() {
+        string enteredUsername, enteredPassword;
+        cout << "Enter username: ";
+        cin >> enteredUsername;
 
-    }else{
-        cout<<"user pwd not found" << endl;
-    }
-}
-//function for generate password
-string generatepwd(int n) {
-    const char input[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*(){}<>";
-    string generatedPwd;
+        cout << "Enter password: ";
+        cin >> enteredPassword;
 
-    for (int i = 0; i < n; i++) {
-        generatedPwd += input[rand() % (sizeof(input) - 1)]; //it take random character from input and generate password with the length of 15
+        // Decrypt and check if the entered password matches the stored encrypted password
+        if (enteredUsername == currentuser.username && enteredPassword == decryptPwd(currentuser.encryptedPwd)) {
+            cout << "User login successful" << endl;
+        } else {
+            cout << "User login failed" << endl;
+        }
     }
 
-    return generatedPwd;
-}};
+    // Function for store password
+    void storagepwd() {
+        cout << "Enter website : ";
+        cin >> currentuser.web;
 
-int main()
-{ passwordmanagement password1;
-    string username;
-    string pwd;
-    string account_name;
+        cout << "Enter username: ";
+        cin >> currentuser.username;
+
+        cout << "Enter password or type 'generate' for a generated password." << endl;
+        string password;
+        cin >> password;
+
+        if (password == "generate") {
+            // Generate a random password
+            currentuser.encryptedPwd = encryptPwd(generatepwd(15));
+        } else {
+            // Encrypt the entered password before storing
+            currentuser.encryptedPwd = encryptPwd(password);
+        }
+
+        cout << "Password stored successfully!" << endl;
+    }
+
+    // Function for retrieve password
+    void retrievepwd() {
+        string enteredUsername, enteredWeb;
+        cout << "Enter username: ";
+        cin >> enteredUsername;
+
+        cout << "Enter website: ";
+        cin >> enteredWeb;
+
+        // Check if entered username and account_name match the stored values
+        if (enteredUsername == currentuser.username && enteredWeb == currentuser.web) {
+            // Decrypt and display the stored encrypted password
+            cout << "Retrieved password: " << decryptPwd(currentuser.encryptedPwd) << endl;
+        } else {
+            cout << "User password not found" << endl;
+        }
+    }
+
+    // Function for generating a random password
+    string generatepwd(int n) {
+        const char input[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*(){}<>";
+        string generatedPwd;
+
+        for (int i = 0; i < n; i++) {
+            generatedPwd += input[rand() % (sizeof(input) - 1)];
+        }
+
+        return generatedPwd;
+    }
+
+    string encryptPwd(const string& password) {
+        // Placeholder: Simple XOR-based encryption
+        string encryptedPassword = password;
+        const char xorKey = 'X';  // Choose a secret key (not secure, just for demonstration)
+
+        for (char& character : encryptedPassword) {
+            character = character ^ xorKey;
+        }
+
+        return encryptedPassword;
+    }
+
+    string decryptPwd(const string& encryptedPassword) {
+        // Placeholder: Simple XOR-based decryption
+        string decryptedPassword = encryptedPassword;
+        const char xorKey = 'X';  // Use the same key as in encryption
+
+        for (char& character : decryptedPassword) {
+            character = character ^ xorKey;
+        }
+
+        return decryptedPassword;
+    }
+};
+
+int main() {
+    passwordmanagement password1;
     int choice;
+
     while (true) {
-        cout << "1. User Registration\n2. User Login\n3. Store Password\n4. Retrieve Password\n";
+        cout << "1. User Registration\n2. User Login\n3. Store Password\n4. Retrieve Password\n5.Exit";
         cout << "Enter your choice: ";
         cin >> choice;
-   
-    switch (choice)
-    {
-    case 1:
-    password1.userreg(username,pwd);
-    break;
-    case 2:
-    password1.userlogin(username,pwd);
-    break;
-    case 3:
-    password1.storagepwd();
-    break;
-    case 4:
-    password1.retrievepwd(username,account_name);
-    break;
-    
-    default:
-        break;
-    }}}
+
+        switch (choice) {
+            case 1:
+                password1.userreg();
+                break;
+            case 2:
+                password1.userlogin();
+                break;
+            case 3:
+                password1.storagepwd();
+                break;
+            case 4:
+                password1.retrievepwd();
+                break;
+            case 5:
+           return 0;
+        }
+    }
+
+    return 0;
+}
